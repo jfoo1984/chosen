@@ -34,6 +34,8 @@ class AbstractChosen
     @include_group_label_in_selected = @options.include_group_label_in_selected || false
     @max_shown_results = @options.max_shown_results || Number.POSITIVE_INFINITY
     @case_sensitive_search = @options.case_sensitive_search || false
+    @reset_search_field_on_update = if @options.reset_search_field_on_update? then @options.reset_search_field_on_update else true
+    @reset_multiple_search_field_on_focus_change = if @options.reset_multiple_search_field_on_focus_change? then @options.reset_multiple_search_field_on_focus_change else true
 
   set_default_text: ->
     if @form_field.getAttribute("data-placeholder")
@@ -130,7 +132,7 @@ class AbstractChosen
     this.set_default_text()
     this.results_reset_cleanup() if not @is_multiple
     this.result_clear_highlight()
-    this.results_build()
+    this.results_build(true)
     this.winnow_results() if @results_showing
 
   reset_single_select_options: () ->
@@ -298,4 +300,3 @@ class AbstractChosen
   @default_multiple_text: "Select Some Options"
   @default_single_text: "Select an Option"
   @default_no_result_text: "No results match"
-

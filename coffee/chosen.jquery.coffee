@@ -132,7 +132,7 @@ class Chosen extends AbstractChosen
 
       if not (evt? and ($ evt.target).hasClass "search-choice-close")
         if not @active_field
-          @search_field.val "" if @is_multiple
+          @search_field.val "" if @is_multiple and (@reset_multiple_search_field_on_focus_change or @search_field.val() is @default_text)
           $(@container[0].ownerDocument).bind 'click.chosen', @click_test_action
           this.results_show()
         else if not @is_multiple and evt and (($(evt.target)[0] == @selected_item[0]) || $(evt.target).parents("a.chosen-single").length)
@@ -163,7 +163,8 @@ class Chosen extends AbstractChosen
     @container.removeClass "chosen-container-active"
     this.clear_backstroke()
 
-    this.show_search_field_default()
+    if (@reset_search_field_on_close)
+        this.show_search_field_default()
     this.search_field_scale()
 
   activate_field: ->
@@ -181,7 +182,7 @@ class Chosen extends AbstractChosen
     else
       this.close_field()
 
-  results_build: ->
+  results_build: (isUpdate=false)->
     @parsing = true
     @selected_option_count = null
 
@@ -201,7 +202,8 @@ class Chosen extends AbstractChosen
     this.update_results_content this.results_option_build({first:true})
 
     this.search_field_disabled()
-    this.show_search_field_default()
+    if (!isUpdate || (isUpdate && @reset_search_field_on_update))
+        this.show_search_field_default()
     this.search_field_scale()
 
     @parsing = false
@@ -323,6 +325,7 @@ class Chosen extends AbstractChosen
     this.reset_single_select_options()
     @form_field.options[0].selected = true
     this.single_set_selected_text()
+
     this.show_search_field_default()
     this.results_reset_cleanup()
     @form_field_jq.trigger "change"
